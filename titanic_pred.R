@@ -1,5 +1,6 @@
 library(caret)
 library(Hmisc)
+library(RCurl)
 
 readData <- function(path.name, file.name, column.types, missing.types) {
         read.csv( paste(path.name, file.name, sep=""), 
@@ -35,8 +36,6 @@ ProbSurv <- function(model, newdata) {
 
 # read in data
 
-Titanic.path <- "/Users/hsuel/Documents/Coursera/JHU_Data_Science/DataProducts/shiny-app/"
-train.data.file <- "train.csv"
 missing.types <- c("NA", "")
 train.column.types <- c('integer',   # PassengerId
                         'factor',    # Survived 
@@ -51,9 +50,10 @@ train.column.types <- c('integer',   # PassengerId
                         'character', # Cabin
                         'factor'     # Embarked
 )
-
-train.raw <- readData(Titanic.path, train.data.file, 
-                      train.column.types, missing.types)
+temp_train <- getURL("https://kaggle2.blob.core.windows.net/competitions-data/kaggle/3136/train.csv?sv=2012-02-12&se=2015-07-28T03%3A16%3A35Z&sr=b&sp=r&sig=8CODDUfe%2BYOGFnwHH45k8o%2BA%2FqHP3caluigGZBDV5YE%3D")
+train.raw <- read.csv(text=temp_train,
+                  colClasses=train.column.types,
+                  na.strings=missing.types )
 df.train <- train.raw
 
 # impute missing Age data using median of Age by title
